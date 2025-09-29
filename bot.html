@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Kalkulator CarNet</title>
+    <style>
+        body {
+            font-family: 'Open Sans', Arial, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+        img.logo {
+            width: 200px;
+            margin-bottom: 15px;
+        }
+        h1 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #1a237e;
+        }
+        label {
+            display: block;
+            text-align: left;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .checkbox {
+            margin: 10px 0;
+            text-align: left;
+        }
+        button {
+            background: #1e88e5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #1565c0;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        /* --- Ściąga (panel boczny) --- */
+        .sciaga-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1e88e5;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 1001;
+        }
+        .sciaga-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 350px;
+            height: 100%;
+            background: white;
+            box-shadow: -4px 0 12px rgba(0,0,0,0.2);
+            padding: 20px;
+            overflow-y: auto;
+            transition: right 0.3s ease-in-out;
+            z-index: 1000;
+        }
+        .sciaga-panel.open {
+            right: 0;
+        }
+        .sciaga-panel h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #1a237e;
+        }
+        .sciaga-panel ul {
+            padding-left: 18px;
+            margin-bottom: 15px;
+        }
+        .sciaga-panel li {
+            margin-bottom: 6px;
+        }
+        .close-btn {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Panel boczny -->
+    <button class="sciaga-btn" onclick="toggleSciaga()">📘 Ściąga</button>
+    <div class="sciaga-panel" id="sciaga">
+        <button class="close-btn" onclick="toggleSciaga()">Zamknij</button>
+        <h2>Zadania premiowane</h2>
+        <ul>
+            <li>Wydaj pojazd (do najmu)</li>
+            <li>Odbierz pojazd (z najmu)</li>
+            <li>Podstaw pojazd (do najmu)</li>
+            <li>Wróć z odbioru (z najmu)</li>
+            <li>Podstaw pojazd do serwisu</li>
+            <li>Wróć z serwisu</li>
+            <li>Przygotuj pojazd (kompletne przygotowanie)</li>
+            <li>Transport pojazdu do dealera</li>
+            <li>Odbiór pojazdu od dealera</li>
+            <li>Relokuj pojazd (pow. 2 km)</li>
+            <li>Relokacja sprzedażowa (pow. 2 km)</li>
+            <li>Inne – Dojazd/powrót z relokacji</li>
+        </ul>
+        <h2>Wskaźnik i premie (18.07.2025)</h2>
+        <ul>
+            <li>do 160 = 0 zł</li>
+            <li>160 – 169 = 200 zł</li>
+            <li>170 – 179 = 400 zł</li>
+            <li>180 – 189 = 600 zł</li>
+            <li>190 – 199 = 800 zł</li>
+            <li>powyżej 200 = 1000 zł</li>
+        </ul>
+    </div>
+
+    <!-- Kalkulator -->
+    <div class="container">
+        <img src="https://i.ibb.co/Csb6yXgJ/Logo-CAR-NET-1.png" alt="CarNet Logo" class="logo">
+        <h1>Kalkulator wypłaty</h1>
+        <form id="calcForm">
+            <label for="godziny">Ilość godzin:</label>
+            <input type="number" id="godziny" required>
+
+            <label for="zadania">Ilość zadań:</label>
+            <input type="number" id="zadania" required>
+
+            <div class="checkbox">
+                <input type="checkbox" id="status_ucznia">
+                <label for="status_ucznia">Status ucznia (stawka 30,50 zł/h)</label>
+            </div>
+
+            <button type="submit">Oblicz</button>
+        </form>
+
+        <div id="wynik" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        function obliczWyplate(godziny, zadania, status_ucznia) {
+            const stawka_carnet = 28.0;
+            const stawka_uczen = 30.50;
+            const stawka_bez_ucznia = 22.00;
+
+            let wskaznik = godziny > 0 ? (zadania / godziny) * 168.0 : 0.0;
+            let premia = 0;
+
+            if (wskaznik >= 160 && wskaznik < 170) premia = 200;
+            else if (wskaznik < 180) premia = 400;
+            else if (wskaznik < 190) premia = 600;
+            else if (wskaznik < 200) premia = 800;
+            else if (wskaznik >= 200) premia = 1000;
+
+            let wyplata_carnet = godziny * stawka_carnet;
+            let wyplata_koncowa, powod;
+
+            if (godziny >= 100 && wskaznik >= 160) {
+                wyplata_koncowa = wyplata_carnet + premia;
+                powod = "carnet + premia";
+            } else {
+                if (status_ucznia) {
+                    wyplata_koncowa = godziny * stawka_uczen;
+                    powod = "minimalna BRUTTO (status ucznia)";
+                } else {
+                    wyplata_koncowa = godziny * stawka_bez_ucznia;
+                    powod = "minimalna NETTO (bez statusu ucznia)";
+                }
+            }
+
+            return {
+                wskaznik: wskaznik.toFixed(2),
+                premia: premia,
+                wyplata_carnet: wyplata_carnet.toFixed(2),
+                wyplata_koncowa: wyplata_koncowa.toFixed(2),
+                powod: powod
+            };
+        }
+
+        document.getElementById("calcForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const godziny = parseFloat(document.getElementById("godziny").value);
+            const zadania = parseFloat(document.getElementById("zadania").value);
+            const status_ucznia = document.getElementById("status_ucznia").checked;
+
+            if (isNaN(godziny) || isNaN(zadania)) {
+                alert("❌ Podaj poprawne liczby!");
+                return;
+            }
+
+            const wynik = obliczWyplate(godziny, zadania, status_ucznia);
+
+            document.getElementById("wynik").style.display = "block";
+            document.getElementById("wynik").innerHTML = `
+                <p><strong>Wskaźnik:</strong> ${wynik.wskaznik}</p>
+                <p><strong>Premia:</strong> ${wynik.premia} zł</p>
+                <p><strong>Wypłata carnetowa:</strong> ${wynik.wyplata_carnet} zł</p>
+                <p><strong>Wypłata końcowa:</strong> ${wynik.wyplata_koncowa} zł</p>
+                <p><strong>Powód:</strong> ${wynik.powod}</p>
+            `;
+        });
+
+        function toggleSciaga() {
+            document.getElementById("sciaga").classList.toggle("open");
+        }
+    </script>
+</body>
+</html>
