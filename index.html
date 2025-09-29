@@ -11,16 +11,15 @@
         --card:#ffffff;
         --muted:#777;
     }
-    *{box-sizing:border-box}
     body{
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, sans-serif;
         background-color: var(--bg);
         margin:0;
         min-height:100vh;
         display:flex;
         align-items:center;
         justify-content:center;
-        padding:28px;
+        padding:30px;
     }
 
     .main-wrapper{
@@ -31,25 +30,22 @@
         width:100%;
     }
 
-    /* panel kalkulatora */
     .container{
         background:var(--card);
-        padding:36px;
+        padding:35px;
         border-radius:16px;
-        box-shadow:0 8px 30px rgba(0,0,0,0.12);
-        width:520px;
+        box-shadow:0 6px 20px rgba(0,0,0,0.12);
+        width:460px;
         display:flex;
         flex-direction:column;
-        justify-content:space-between; /* powoduje, że credits lądują u dołu */
-        min-height:620px; /* zapewnia miejsce na credits na dole */
     }
 
-    .container img{ width:220px; margin:0 auto 22px; display:block; }
+    .container img{ width:200px; margin:0 auto 20px; display:block; }
 
     h2{
         color:var(--accent);
-        margin:0 0 22px;
-        font-size:30px;
+        margin:0 0 18px;
+        font-size:28px;
         font-weight:800;
         text-align:center;
     }
@@ -58,96 +54,83 @@
 
     input[type="number"]{
         width:100%;
-        padding:14px;
-        border-radius:10px;
-        border:1px solid #d6dde6;
+        padding:12px;
+        border-radius:8px;
+        border:1px solid #d0d6de;
         font-size:16px;
-        outline:none;
+        box-sizing:border-box;
     }
-    input[type="number"]:focus{ box-shadow:0 0 0 4px rgba(33,192,252,0.08); border-color:var(--accent); }
 
     .checkbox-label{
         display:flex;
         align-items:center;
-        gap:12px;
-        margin:20px 0;
+        gap:10px;
+        margin:18px 0;
         color:var(--accent);
         font-weight:700;
-        font-size:17px;
+        font-size:16px;
     }
-    .checkbox-label input[type="checkbox"]{ transform:scale(1.45); }
+    .checkbox-label input[type="checkbox"]{ transform:scale(1.35); }
 
     button{
         background-color:var(--accent);
         color:white;
         border:none;
         padding:14px 28px;
-        border-radius:10px;
-        font-weight:800;
+        border-radius:8px;
+        font-weight:700;
         font-size:16px;
         cursor:pointer;
         align-self:center;
-        margin-top:6px;
     }
     button:hover{ background:#1a9ed4; }
 
     .result{
-        margin-top:22px;
-        font-size:18px;
+        margin-top:20px;
+        font-size:16px;
         color:var(--accent);
-        font-weight:800;
-        text-align:center;
+        font-weight:700;
     }
 
     .details{
-        margin-top:14px;
-        font-size:15px;
+        margin-top:10px;
+        font-size:14px;
         color:#333;
         text-align:left;
-        line-height:1.45;
+        line-height:1.4;
         background:#fbfdff;
-        border-radius:10px;
-        padding:14px;
+        border-radius:8px;
+        padding:12px;
         border:1px solid #eef6fb;
     }
 
-    /* sidebar po prawej z info */
     .sidebar{
         background:#f9f9f9;
-        border-left:6px solid var(--accent);
-        padding:22px;
-        border-radius:10px;
-        width:420px;
+        border-left:5px solid var(--accent);
+        padding:20px;
+        border-radius:8px;
+        width:440px;
         box-sizing:border-box;
         font-size:15px;
         color:#222;
-        min-height:320px;
     }
-    .sidebar strong{ color:var(--accent); display:block; margin-bottom:10px; font-size:16px; }
+    .sidebar strong{ color:var(--accent); display:block; margin-bottom:8px; font-size:16px; }
 
     .sidebar ul{ margin:8px 0 16px 20px; }
 
-    /* credits wewnątrz boxa, lewy dół */
     .credits{
         margin-top:18px;
         color:var(--accent);
         font-weight:700;
         font-size:14px;
         text-align:left;
-        align-self:flex-start; /* lewa strona */
     }
 
     /* responsywność */
-    @media (max-width:1100px){
-        .main-wrapper{ flex-direction:column; align-items:center; gap:22px; }
-        .sidebar{ width:100%; max-width:720px; }
-        .container{ width:100%; max-width:720px; min-height:auto; }
-    }
-
-    @media (max-width:420px){
-        h2{ font-size:22px; }
-        .container{ padding:20px; }
-        .sidebar{ padding:12px; }
+    @media (max-width:1000px){
+        .main-wrapper{ flex-direction:column; align-items:center; gap:20px; }
+        .sidebar{ width:100%; max-width:640px; }
+        .container{ width:100%; max-width:640px; }
     }
 </style>
 </head>
@@ -155,22 +138,140 @@
 
 <div class="main-wrapper">
 
-    <!-- panel kalkulatora -->
-    <div class="container" role="region" aria-label="Kalkulator wypłaty">
-        <div>
-            <img src="https://i.ibb.co/Csb6yXgJ/Logo-CAR-NET-1.png" alt="CarNet logo">
-            <h2>Kalkulator wypłaty</h2>
+    <div class="container">
+        <img src="https://i.ibb.co/Csb6yXgJ/Logo-CAR-NET-1.png" alt="CarNet logo">
+        <h2>Kalkulator wypłaty</h2>
 
-            <label for="hours">Ilość godzin:</label>
-            <input id="hours" type="number" min="0" placeholder="np. 218">
+        <label for="hours">Ilość godzin:</label>
+        <input id="hours" type="number" min="0" placeholder="np. 218">
 
-            <label for="tasks">Ilość zadań premiowanych:</label>
-            <input id="tasks" type="number" min="0" placeholder="np. 270">
+        <label for="tasks">Ilość zadań premiowanych:</label>
+        <input id="tasks" type="number" min="0" placeholder="np. 270">
 
-            <div class="checkbox-label">
-                <input id="student" type="checkbox" aria-label="Status ucznia">
-                <label for="student">Status ucznia (stawka 30,50 zł/h)</label>
-            </div>
+        <div class="checkbox-label">
+            <input id="student" type="checkbox">
+            <label for="student">Status ucznia (stawka 30,50 zł/h)</label>
+        </div>
 
-            <div style="display:flex; gap:12px; align-items:center;">
-                <button id="calcBtn" aria-live="polite">Oblicz</button>
+        <button id="calcBtn">Oblicz</button>
+
+        <div class="result" id="resultSummary" style="display:none;"></div>
+        <div class="details" id="resultDetails" style="display:none;"></div>
+
+        <div class="credits">Kalkulator by Dawid Ołka</div>
+    </div>
+
+    <div class="sidebar">
+        <strong>Zadania premiowane:</strong>
+        <ul>
+            <li>Wydaj pojazd (do najmu)</li>
+            <li>Odbierz pojazd (z najmu)</li>
+            <li>Podstaw pojazd (do najmu)</li>
+            <li>Wróć z odbioru (z najmu)</li>
+            <li>Podstaw pojazd do serwisu</li>
+            <li>Wróć z serwisu</li>
+            <li>Przygotuj pojazd (kompletne przygotowanie)</li>
+            <li>Transport pojazdu do dealera</li>
+            <li>Odbiór pojazdu od dealera</li>
+            <li>Relokuj pojazd (pow. 2 km)</li>
+            <li>Relokacja sprzedażowa (pow. 2 km)</li>
+            <li>Inne – Dojazd/powrót z relokacji</li>
+        </ul>
+
+        <strong>Wskaźnik oraz kwoty premii (stan 18.07.2025)</strong>
+        <ul>
+            <li>do 160 = 0 zł</li>
+            <li>160 – 169 = 200 zł</li>
+            <li>170 – 179 = 400 zł</li>
+            <li>180 – 189 = 600 zł</li>
+            <li>190 – 199 = 800 zł</li>
+            <li>powyżej 200 = 1000 zł</li>
+        </ul>
+    </div>
+
+</div>
+
+<script>
+document.getElementById('calcBtn').addEventListener('click', calculate);
+
+function calculate(){
+    // pobierz dane
+    const hoursEl = document.getElementById('hours');
+    const tasksEl = document.getElementById('tasks');
+    const studentEl = document.getElementById('student');
+    const resultSummary = document.getElementById('resultSummary');
+    const resultDetails = document.getElementById('resultDetails');
+
+    let hours = parseFloat(hoursEl.value);
+    let tasks = parseFloat(tasksEl.value);
+    const isStudent = studentEl.checked;
+
+    // walidacja
+    if (isNaN(hours) || hours < 0 || isNaN(tasks) || tasks < 0) {
+        alert('Podaj poprawne, nieujemne liczby dla godzin i zadań.');
+        return;
+    }
+
+    // stałe
+    const STAWKA_CARNET = 28.0;      // wypłata carnetowa za godzinę
+    const STAWKA_UCZEN = 30.5;       // status ucznia -> 30.50 zł/h (brutto)
+    const STAWKA_BEZ_UCZNIA = 23.0;  // bez statusu -> 23.00 zł/h (netto)
+
+    // 1) wskaźnik efektywności
+    const wskaznik = (hours > 0) ? (tasks / hours) * 168.0 : 0.0;
+    const wskaznikRounded = Math.round(wskaznik * 100) / 100; // 2 miejsca
+
+    // 2) premia wg progu na podstawie wskaźnika
+    let premia = 0;
+    if (wskaznik < 160.0) premia = 0;
+    else if (wskaznik < 170.0) premia = 200;
+    else if (wskaznik < 180.0) premia = 400;
+    else if (wskaznik < 190.0) premia = 600;
+    else if (wskaznik < 200.0) premia = 800;
+    else premia = 1000;
+
+    // 3) wypłata carnetowa (standardowa stawka CarNet)
+    const wyplataCarnet = hours * STAWKA_CARNET;
+
+    // 4) logika końcowa: tylko jeśli godziny >=100 i wskaźnik >=160 -> carnet + premia
+    let wyplataKoncowa = 0;
+    let powod = '';
+    if (hours >= 100.0 && wskaznik >= 160.0) {
+        wyplataKoncowa = wyplataCarnet + premia;
+        powod = 'carnet + premia (spełniono warunki: >=100h i wskaźnik >=160)';
+    } else {
+        // pracownik nie spełnia warunków -> płaca minimalna w zależności od statusu
+        const minimalna = isStudent ? STAWKA_UCZEN : STAWKA_BEZ_UCZNIA;
+        wyplataKoncowa = hours * minimalna;
+        powod = isStudent
+            ? 'płaca minimalna BRUTTO (status ucznia) - warunki nie spełnione'
+            : 'płaca minimalna NETTO (bez statusu ucznia) - warunki nie spełnione';
+    }
+
+    // wyświetlanie wyników (czytelnie, krok po kroku)
+    resultSummary.style.display = 'block';
+    resultDetails.style.display = 'block';
+
+    resultSummary.innerHTML =
+        `Wypłata końcowa: <strong>${wyplataKoncowa.toFixed(2)} zł</strong>`;
+
+    resultDetails.innerHTML =
+        `<div><strong>Wskaźnik efektywności:</strong> ${wskaznikRounded} 
+            ${wskaznikRounded >= 160 ? '(>=160)':'(<160)'}
+        </div>
+        <div><strong>Wypłata carnetowa (28 zł/h):</strong> ${wyplataCarnet.toFixed(2)} zł</div>
+        <div><strong>Premia wg progu:</strong> ${premia} zł</div>
+        <div><strong>Powód:</strong> ${powod}</div>
+        <hr style="margin:10px 0;border:none;border-top:1px solid #eef6fb;">
+        <div style="font-size:13px;color:${'#555'}">
+            <em>Uwaga:</em> do uzyskania premii wymagane jest przepracowanie min. 100 h i wskaźnik >=160.
+            Przy braku spełnienia warunków kalkulowana jest płaca minimalna (student: 30,50 zł/h, bez statusu: 23,00 zł/h).
+        </div>`;
+
+    // scroll do wyników (opcjonalne, jeśli okno jest krótkie)
+    resultDetails.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+</script>
+
+</body>
+</html>
