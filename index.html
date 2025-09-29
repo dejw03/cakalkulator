@@ -5,15 +5,30 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Kalkulator wypłaty — CarNet</title>
 
+<!-- Proste zabezpieczenie po stronie klienta -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Prosty prompt z hasłem (uwaga: to nie jest bezpieczne rozwiązanie produkcyjne)
+    const pass = prompt("Podaj hasło, aby uzyskać dostęp do strony:");
+    if (pass !== "maslak") {
+        alert("Błędne hasło. Brak dostępu.");
+        // przekierowanie na pustą stronę
+        window.location.href = "about:blank";
+    }
+});
+</script>
+
 <!-- Open Sans -->
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-    :root{
-        --accent:#21C0FC;
-        --muted:#aaa;
-        --bg-dark:rgba(60,60,60,0.85); 
-    }
+:root{
+    --accent:#21C0FC;
+    --muted:#aaa;
+    --bg-dark:rgba(60,60,60,0.85);
+}
+
+*{ box-sizing: border-box; }
 
 body {
     margin: 0;
@@ -27,6 +42,7 @@ body {
     overflow: hidden;
     text-align:center;
     color:#fff;
+    background-color:#000;
 }
 
 body::before {
@@ -58,7 +74,7 @@ body::after {
     max-width:1400px;
     width:100%;
     margin:auto;
-    animation: fadeIn 1s ease;
+    animation: fadeIn 0.9s ease;
     padding:15px;
 }
 
@@ -72,12 +88,14 @@ body::after {
     min-width:360px;
     max-width:460px;
     text-align:left;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
-.container img{ 
-    width:200px; 
-    margin:0 auto 20px; 
-    display:block; 
+.container img{
+    width:200px;
+    margin:0 auto 20px;
+    display:block;
 }
 
 h2{
@@ -88,12 +106,12 @@ h2{
     text-align:center;
 }
 
-label{ 
-    display:block; 
-    margin:14px 0 6px; 
-    color:var(--accent); 
-    font-weight:700; 
-    font-size:16px; 
+label{
+    display:block;
+    margin:14px 0 6px;
+    color:var(--accent);
+    font-weight:700;
+    font-size:16px;
     text-align:left;
 }
 
@@ -104,11 +122,15 @@ input[type="number"]{
     border:1px solid #ccc;
     font-size:16px;
     box-sizing:border-box;
+    background: rgba(255,255,255,0.03);
+    color: #fff;
 }
+
+input::placeholder{ color: #ddd; opacity:0.7; }
 
 .checkbox-label{
     display:flex;
-    align-items:center; 
+    align-items:center;
     gap:10px;
     margin:18px 0;
     font-weight:700;
@@ -116,23 +138,28 @@ input[type="number"]{
     color:var(--accent);
 }
 
+/* wyrównanie checkbox + tekst */
 .checkbox-label input[type="checkbox"]{
     transform:scale(1.2);
     margin:0;
+    accent-color: var(--accent);
 }
-
 .checkbox-label label{
-    margin:0; 
+    margin:0;
     padding:0;
-    line-height:1.3;
+    line-height:1.2;
     cursor:pointer;
+    color:var(--accent);
+    font-weight:700;
 }
 
+/* przyciski */
 .buttons{
     display:flex;
     justify-content:center;
     gap:15px;
     margin-top:10px;
+    flex-wrap:wrap;
 }
 
 button{
@@ -144,12 +171,13 @@ button{
     font-weight:700;
     font-size:15px;
     cursor:pointer;
-    transition: background .3s, opacity .3s;
+    transition: background .25s, opacity .25s;
 }
 button:hover{ background:#1a9ed4; }
-button.reset{ background:#777; }
+button.reset{ background:#777; color:#fff; }
 button.reset:hover{ background:#555; }
 
+/* wyniki z fade */
 .result{
     margin-top:20px;
     font-size:16px;
@@ -157,7 +185,7 @@ button.reset:hover{ background:#555; }
     font-weight:700;
     text-align:center;
     opacity:1;
-    transition:opacity .5s ease;
+    transition: opacity .45s ease;
 }
 
 .details{
@@ -170,7 +198,7 @@ button.reset:hover{ background:#555; }
     padding:12px;
     border:1px solid rgba(255,255,255,0.15);
     opacity:1;
-    transition:opacity .5s ease;
+    transition: opacity .45s ease;
 }
 
 .hidden{
@@ -178,21 +206,24 @@ button.reset:hover{ background:#555; }
     pointer-events:none;
 }
 
+/* sidebar */
 .sidebar{
     font-size:15px;
     line-height:1.6;
 }
-.sidebar strong{ 
-    color:var(--accent); 
-    display:block; 
-    margin-bottom:10px; 
-    font-size:17px; 
+.sidebar strong{
+    color:var(--accent);
+    display:block;
+    margin-bottom:10px;
+    font-size:17px;
     font-weight:700;
 }
-.sidebar ul{ 
-    margin:8px 0 20px 20px; 
+.sidebar ul{
+    margin:8px 0 20px 20px;
+    padding:0;
 }
 
+/* stopka credits */
 .credits{
     margin-top:20px;
     color:var(--muted);
@@ -202,11 +233,13 @@ button.reset:hover{ background:#555; }
 }
 .credits span{ color:var(--accent); font-weight:700; }
 
+/* responsywność */
 @media (max-width:1100px){
     .main-wrapper{ flex-direction:column; align-items:center; gap:25px; }
     .sidebar, .container{ width:100%; max-width:650px; }
 }
 
+/* animacje */
 @keyframes fadeIn{
     from{ opacity:0; transform:translateY(20px);}
     to{ opacity:1; transform:translateY(0);}
@@ -217,33 +250,33 @@ button.reset:hover{ background:#555; }
 
 <div class="main-wrapper">
 
-    <div class="container">
+    <div class="container" role="main" aria-label="Kalkulator wypłaty">
         <img src="https://i.ibb.co/Csb6yXgJ/Logo-CAR-NET-1.png" alt="CarNet logo">
         <h2>Kalkulator wypłaty</h2>
 
         <label for="hours">Ilość godzin:</label>
-        <input id="hours" type="number" min="0" placeholder="np. 218">
+        <input id="hours" type="number" min="0" placeholder="np. 218" inputmode="numeric" />
 
         <label for="tasks">Ilość zadań premiowanych:</label>
-        <input id="tasks" type="number" min="0" placeholder="np. 270">
+        <input id="tasks" type="number" min="0" placeholder="np. 270" inputmode="numeric" />
 
         <div class="checkbox-label">
-            <input id="student" type="checkbox">
+            <input id="student" type="checkbox" />
             <label for="student">Status ucznia (stawka 30,50 zł/h)</label>
         </div>
 
-        <div class="buttons">
-            <button id="calcBtn">Oblicz</button>
-            <button id="resetBtn" class="reset">Reset</button>
+        <div class="buttons" aria-hidden="false">
+            <button id="calcBtn" type="button">Oblicz</button>
+            <button id="resetBtn" type="button" class="reset">Resetuj</button>
         </div>
 
-        <div class="result" id="resultSummary" style="display:none;"></div>
+        <div class="result" id="resultSummary" style="display:none;" aria-live="polite"></div>
         <div class="details" id="resultDetails" style="display:none;"></div>
 
         <div class="credits">supported by <span>dejw03</span></div>
     </div>
 
-    <div class="sidebar">
+    <div class="sidebar" aria-label="Informacje o premiach">
         <strong>Zadania premiowane:</strong>
         <ul>
             <li>Wydaj pojazd (do najmu)</li>
@@ -274,6 +307,7 @@ button.reset:hover{ background:#555; }
 </div>
 
 <script>
+/* Logika kalkulatora */
 document.getElementById('calcBtn').addEventListener('click', calculate);
 document.getElementById('resetBtn').addEventListener('click', resetCalc);
 
@@ -323,8 +357,10 @@ function calculate(){
             : 'płaca minimalna NETTO (bez statusu ucznia) - warunki nie spełnione';
     }
 
+    // pokaż wyniki (fade-in poprzez usunięcie klasy hidden oraz ustawienie display)
     resultSummary.style.display = 'block';
     resultDetails.style.display = 'block';
+    // usuń klasę hidden jeśli była
     resultSummary.classList.remove('hidden');
     resultDetails.classList.remove('hidden');
 
@@ -338,7 +374,7 @@ function calculate(){
         <div><strong>Wypłata carnetowa (28 zł/h):</strong> ${wyplataCarnet.toFixed(2)} zł</div>
         <div><strong>Premia wg progu:</strong> ${premia} zł</div>
         <div><strong>Powód:</strong> ${powod}</div>
-        <hr style="margin:10px 0;border:none;border-top:1px solid rgba(255,255,255,0.2);">
+        <hr style="margin:10px 0;border:none;border-top:1px solid rgba(255,255,255,0.15);">
         <div style="font-size:12px;color:#ccc">
             <em>Uwaga:</em> do uzyskania premii wymagane jest przepracowanie min. 100 h i wskaźnik >=160.
             Przy braku spełnienia warunków kalkulowana jest płaca minimalna (student: 30,50 zł/h, bez statusu: 23,00 zł/h).
@@ -352,19 +388,22 @@ function resetCalc(){
     const resultSummary = document.getElementById('resultSummary');
     const resultDetails = document.getElementById('resultDetails');
 
+    // wyczyszczenie pól
     hoursEl.value = '';
     tasksEl.value = '';
     studentEl.checked = false;
 
+    // fade-out
     resultSummary.classList.add('hidden');
     resultDetails.classList.add('hidden');
 
+    // po zakończeniu animacji ukryj i wyczyść zawartość
     setTimeout(() => {
         resultSummary.style.display = 'none';
         resultDetails.style.display = 'none';
         resultSummary.innerHTML = '';
         resultDetails.innerHTML = '';
-    }, 500); // tyle co transition w CSS
+    }, 480); // dopasowane do transition w CSS
 }
 </script>
 
