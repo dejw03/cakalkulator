@@ -13,7 +13,7 @@
   --accent: #21C0FC;
   --muted: #9aa;
   --glass-border: rgba(255,255,255,0.08);
-  --net-factor: 0.82; /* brutto->netto */
+  --net-factor: 0.82;
   --max-width-app: 1200px;
 }
 
@@ -22,25 +22,25 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;             
+  height: 100%;
   min-height: 100vh;
   font-family: "Open Sans", Arial, sans-serif;
   color: #fff;
   position: relative;
-  overflow-x: hidden;       
+  overflow-x: hidden;
 }
 
 body::before {
   content: "";
-  position: fixed;          
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background: url("https://carnet.pl/app/uploads/2025/05/weekend.png") no-repeat center center fixed;
-  background-size: cover;   
-  filter: blur(6px);        
-  z-index: -2;              
+  background-size: cover;
+  filter: blur(6px);
+  z-index: -2;
 }
 
 body::after {
@@ -50,8 +50,8 @@ body::after {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.55);  
-  z-index: -1;                   
+  background: rgba(0,0,0,0.55);
+  z-index: -1;
 }
 
 /* layout */
@@ -74,10 +74,10 @@ body::after {
   padding: 28px;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: none;          /* usunięta biała ramka */
-  box-shadow: none;      /* usunięty cień */
+  border: none;
+  box-shadow: none;
   color: #eaf6ff;
-  flex: 1 1 50%;         /* równa szerokość dla obu paneli */
+  flex: 1 1 50%;
 }
 
 /* header */
@@ -86,7 +86,7 @@ h2 { color: var(--accent); text-align:center; margin:6px 0 18px; font-size: 26px
 
 /* labels and inputs */
 .field-label { display:block; color: var(--accent); font-weight:700; margin:12px 0 6px; font-size:15px; }
-input[type="number"]{
+input[type="number"], input[type="password"] {
   width:100%;
   padding:12px;
   border-radius:10px;
@@ -139,6 +139,40 @@ button.secondary:hover{ background:#5b5b5b; }
 .credits { margin-top:14px; text-align:center; color:var(--muted); font-size:12px; }
 .credits span{ color:var(--accent); font-weight:700; }
 
+/* login overlay */
+#loginOverlay {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(0,0,0,0.8);
+  z-index: 999;
+}
+.login-box {
+  background: rgba(28,28,28,0.9);
+  padding: 40px;
+  border-radius: 16px;
+  text-align:center;
+  max-width: 340px;
+  width:90%;
+  box-shadow: 0 0 12px rgba(0,0,0,0.5);
+}
+.login-box h2 {
+  margin-bottom: 20px;
+  color: var(--accent);
+}
+.login-box input {
+  margin-bottom: 14px;
+}
+.login-error {
+  color: #ff6464;
+  margin-top: 10px;
+  font-size: 14px;
+  display: none;
+}
+
 /* responsive */
 @media (max-width: 980px) {
   .main-wrapper { flex-direction:column; padding:14px; gap:16px; align-items:center; }
@@ -149,67 +183,101 @@ button.secondary:hover{ background:#5b5b5b; }
 </head>
 <body>
 
-<div class="main-wrapper">
+<!-- EKRAN LOGOWANIA -->
+<div id="loginOverlay">
+  <div class="login-box">
+    <h2>🔒 Dostęp chroniony</h2>
+    <input type="password" id="passwordInput" placeholder="Wpisz hasło..." />
+    <button id="loginBtn">Zaloguj</button>
+    <div id="loginError" class="login-error">Nieprawidłowe hasło!</div>
+  </div>
+</div>
 
-  <div class="card container">
-    <img src="https://i.ibb.co/Csb6yXgJ/Logo-CAR-NET-1.png" alt="CarNet logo" />
-    <h2>Kalkulator wypłaty</h2>
+<div id="appContent" style="display:none;">
+  <div class="main-wrapper">
 
-    <label class="field-label" for="hours">Ilość godzin:</label>
-    <input id="hours" type="number" inputmode="numeric" min="0" placeholder="np. 218" />
+    <div class="card container">
+      <img src="https://i.ibb.co/Csb6yXgJ/Logo-CAR-NET-1.png" alt="CarNet logo" />
+      <h2>Kalkulator wypłaty</h2>
 
-    <label class="field-label" for="tasks">Ilość zadań premiowanych:</label>
-    <input id="tasks" type="number" inputmode="numeric" min="0" placeholder="np. 270" />
+      <label class="field-label" for="hours">Ilość godzin:</label>
+      <input id="hours" type="number" inputmode="numeric" min="0" placeholder="np. 218" />
 
-    <div class="checkbox-label">
-      <label for="student">
-        <input id="student" type="checkbox" />
-        Status ucznia (stawka 30,50 zł/h)
-      </label>
+      <label class="field-label" for="tasks">Ilość zadań premiowanych:</label>
+      <input id="tasks" type="number" inputmode="numeric" min="0" placeholder="np. 270" />
+
+      <div class="checkbox-label">
+        <label for="student">
+          <input id="student" type="checkbox" />
+          Status ucznia (stawka 30,50 zł/h)
+        </label>
+      </div>
+
+      <div class="btn-row">
+        <button id="calcBtn" type="button">Oblicz</button>
+        <button id="resetBtn" type="button" class="secondary">Resetuj</button>
+      </div>
+
+      <div id="resultSummary" class="result" style="display:none;"></div>
+      <div id="resultDetails" class="details" style="display:none;"></div>
+
+      <div class="credits">supported by <span>dejw03</span></div>
     </div>
 
-    <div class="btn-row">
-      <button id="calcBtn" type="button">Oblicz</button>
-      <button id="resetBtn" type="button" class="secondary">Resetuj</button>
+    <div class="card sidebar">
+      <strong>Zadania premiowane:</strong>
+      <ul>
+        <li>Wydaj pojazd (do najmu)</li>
+        <li>Odbierz pojazd (z najmu)</li>
+        <li>Podstaw pojazd (do najmu)</li>
+        <li>Wróć z odbioru (z najmu)</li>
+        <li>Podstaw pojazd do serwisu</li>
+        <li>Wróć z serwisu</li>
+        <li>Przygotuj pojazd (kompletne przygotowanie)</li>
+        <li>Transport pojazdu do dealera</li>
+        <li>Odbiór pojazdu od dealera</li>
+        <li>Relokuj pojazd (pow. 2 km)</li>
+        <li>Relokacja sprzedażowa (pow. 2 km)</li>
+        <li>Inne – Dojazd/powrót z relokacji</li>
+      </ul>
+
+      <strong>Wskaźnik oraz kwoty premii (stan 18.07.2025)</strong>
+      <ul>
+        <li>do 160 = 0 zł</li>
+        <li>160 – 169 = 200 zł</li>
+        <li>170 – 179 = 400 zł</li>
+        <li>180 – 189 = 600 zł</li>
+        <li>190 – 199 = 800 zł</li>
+        <li>powyżej 200 = 1000 zł</li>
+      </ul>
     </div>
 
-    <div id="resultSummary" class="result" style="display:none;"></div>
-    <div id="resultDetails" class="details" style="display:none;"></div>
-
-    <div class="credits">supported by <span>dejw03</span></div>
   </div>
-
-  <div class="card sidebar">
-    <strong>Zadania premiowane:</strong>
-    <ul>
-      <li>Wydaj pojazd (do najmu)</li>
-      <li>Odbierz pojazd (z najmu)</li>
-      <li>Podstaw pojazd (do najmu)</li>
-      <li>Wróć z odbioru (z najmu)</li>
-      <li>Podstaw pojazd do serwisu</li>
-      <li>Wróć z serwisu</li>
-      <li>Przygotuj pojazd (kompletne przygotowanie)</li>
-      <li>Transport pojazdu do dealera</li>
-      <li>Odbiór pojazdu od dealera</li>
-      <li>Relokuj pojazd (pow. 2 km)</li>
-      <li>Relokacja sprzedażowa (pow. 2 km)</li>
-      <li>Inne – Dojazd/powrót z relokacji</li>
-    </ul>
-
-    <strong>Wskaźnik oraz kwoty premii (stan 18.07.2025)</strong>
-    <ul>
-      <li>do 160 = 0 zł</li>
-      <li>160 – 169 = 200 zł</li>
-      <li>170 – 179 = 400 zł</li>
-      <li>180 – 189 = 600 zł</li>
-      <li>190 – 199 = 800 zł</li>
-      <li>powyżej 200 = 1000 zł</li>
-    </ul>
-  </div>
-
 </div>
 
 <script>
+/* --- LOGOWANIE --- */
+const correctPassword = "maslak";
+const loginOverlay = document.getElementById("loginOverlay");
+const appContent = document.getElementById("appContent");
+const loginBtn = document.getElementById("loginBtn");
+const passwordInput = document.getElementById("passwordInput");
+const loginError = document.getElementById("loginError");
+
+loginBtn.addEventListener("click", () => {
+  if (passwordInput.value === correctPassword) {
+    loginOverlay.style.display = "none";
+    appContent.style.display = "block";
+  } else {
+    loginError.style.display = "block";
+    passwordInput.value = "";
+  }
+});
+passwordInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") loginBtn.click();
+});
+
+/* --- KALKULATOR --- */
 const STAWKA_CARNET_BRUTTO = 28.00;
 const STAWKA_UCZEN_BRUTTO = 30.50;
 const STAWKA_MIN_NETTO = 23.00;
@@ -282,5 +350,6 @@ function resetForm(){
 calcBtn.addEventListener("click", calculate);
 resetBtn.addEventListener("click", resetForm);
 </script>
+
 </body>
 </html>
