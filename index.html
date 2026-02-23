@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
 <title>Kalkulator wypłaty — CarNet</title>
 
-<!-- Open Sans -->
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
@@ -78,6 +77,7 @@ body::after {
   box-shadow: none;
   color: #eaf6ff;
   flex: 1 1 50%;
+  position: relative;
 }
 
 /* header */
@@ -114,18 +114,33 @@ input[type="number"], input[type="password"] {
 button {
   background: var(--accent);
   color: #fff;
-  border:none;
-  padding: 12px 26px;
-  border-radius:10px;
-  font-weight:700;
-  font-size:15px;
-  cursor:pointer;
-  transition: background .14s ease, transform .08s ease;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 10px; /* To kluczowe zaokrąglenie */
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  width: 100%; /* Rozciągnie przycisk w oknie logowania */
+  max-width: 220px; 
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(33, 192, 252, 0.3);
+  margin-top: 10px;
 }
-button:active{ transform: translateY(1px); }
-button.secondary { background:#777; color:#fff; }
-button:hover{ background:#1aa8e9; }
-button.secondary:hover{ background:#5b5b5b; }
+button:hover {
+  background: #1aa8e9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(33, 192, 252, 0.4);
+}
+.logout-link {
+  display: inline-block;
+  margin-top: 20px;
+  color: #777;
+  font-size: 11px;
+  text-decoration: underline;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+}
 
 /* results */
 .result { margin-top:18px; color: var(--accent); font-weight:800; text-align:center; font-size:17px; }
@@ -151,20 +166,17 @@ button.secondary:hover{ background:#5b5b5b; }
   z-index: 999;
 }
 .login-box {
-  background: rgba(28,28,28,0.9);
+  background: rgba(28, 28, 28, 0.9);
   padding: 40px;
   border-radius: 16px;
-  text-align:center;
+  text-align: center;
   max-width: 340px;
-  width:90%;
-  box-shadow: 0 0 12px rgba(0,0,0,0.5);
-}
-.login-box h2 {
-  margin-bottom: 20px;
-  color: var(--accent);
-}
-.login-box input {
-  margin-bottom: 14px;
+  width: 90%;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  /* Dodaj te 3 linie poniżej */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .login-error {
   color: #ff6464;
@@ -183,7 +195,6 @@ button.secondary:hover{ background:#5b5b5b; }
 </head>
 <body>
 
-<!-- EKRAN LOGOWANIA -->
 <div id="loginOverlay">
   <div class="login-box">
     <h2>🔒 Dostęp chroniony</h2>
@@ -209,7 +220,7 @@ button.secondary:hover{ background:#5b5b5b; }
       <div class="checkbox-label">
         <label for="student">
           <input id="student" type="checkbox" />
-          Status ucznia (stawka 30,50 zł/h)
+          Status ucznia (stawka 31,40 zł/h)
         </label>
       </div>
 
@@ -222,6 +233,7 @@ button.secondary:hover{ background:#5b5b5b; }
       <div id="resultDetails" class="details" style="display:none;"></div>
 
       <div class="credits">supported by <span>dejw03</span></div>
+      <span class="logout-link" onclick="logout()">Wyloguj i zablokuj dostęp</span>
     </div>
 
     <div class="card sidebar">
@@ -241,7 +253,7 @@ button.secondary:hover{ background:#5b5b5b; }
         <li>Inne – Dojazd/powrót z relokacji</li>
       </ul>
 
-      <strong>Wskaźnik oraz kwoty premii (stan 18.07.2025)</strong>
+      <strong>Wskaźnik oraz kwoty premii</strong>
       <ul>
         <li>do 160 = 0 zł</li>
         <li>160 – 169 = 200 zł</li>
@@ -256,7 +268,7 @@ button.secondary:hover{ background:#5b5b5b; }
 </div>
 
 <script>
-/* --- LOGOWANIE --- */
+/* --- LOGOWANIE Z PAMIĘCIĄ --- */
 const correctPassword = "maslak";
 const loginOverlay = document.getElementById("loginOverlay");
 const appContent = document.getElementById("appContent");
@@ -264,23 +276,40 @@ const loginBtn = document.getElementById("loginBtn");
 const passwordInput = document.getElementById("passwordInput");
 const loginError = document.getElementById("loginError");
 
-loginBtn.addEventListener("click", () => {
+// Sprawdzenie sesji przy ładowaniu
+if (localStorage.getItem("carnet_auth") === "true") {
+  showApp();
+}
+
+function showApp() {
+  loginOverlay.style.display = "none";
+  appContent.style.display = "block";
+}
+
+function handleLogin() {
   if (passwordInput.value === correctPassword) {
-    loginOverlay.style.display = "none";
-    appContent.style.display = "block";
+    localStorage.setItem("carnet_auth", "true");
+    showApp();
   } else {
     loginError.style.display = "block";
     passwordInput.value = "";
   }
-});
+}
+
+function logout() {
+  localStorage.removeItem("carnet_auth");
+  location.reload();
+}
+
+loginBtn.addEventListener("click", handleLogin);
 passwordInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") loginBtn.click();
+  if (e.key === "Enter") handleLogin();
 });
 
 /* --- KALKULATOR --- */
 const STAWKA_CARNET_BRUTTO = 28.00;
-const STAWKA_UCZEN_BRUTTO = 30.50;
-const STAWKA_MIN_NETTO = 23.00;
+const STAWKA_UCZEN_BRUTTO = 31.40; // Nowa stawka
+const STAWKA_MIN_NETTO = 24.66;    // Nowa stawka
 const NET_FACTOR = 0.82;
 
 const hoursInput = document.getElementById('hours');
@@ -296,45 +325,49 @@ function grossToNet(value){ return +(value * NET_FACTOR).toFixed(2); }
 function calculate(){
   const hours = parseFloat(hoursInput.value);
   const tasks = parseFloat(tasksInput.value);
+  
   if (isNaN(hours) || isNaN(tasks) || hours < 0 || tasks < 0){
     alert("Podaj poprawne wartości!");
     return;
   }
+  
   const isStudent = studentCheckbox.checked;
   const wsk = hours > 0 ? (tasks / hours) * 168 : 0;
+  
+  // Logika progów premiowych
   let premia = 0;
   if (wsk >= 160 && wsk < 170) premia = 200;
-  else if (wsk < 180) premia = 400;
-  else if (wsk < 190) premia = 600;
-  else if (wsk < 200) premia = 800;
+  else if (wsk >= 170 && wsk < 180) premia = 400;
+  else if (wsk >= 180 && wsk < 190) premia = 600;
+  else if (wsk >= 190 && wsk < 200) premia = 800;
   else if (wsk >= 200) premia = 1000;
 
-  const carnetBrutto = hours * STAWKA_CARNET_BRUTTO;
   let total = 0;
   let szczegoly = "";
 
   if (hours >= 100 && wsk >= 160){
+    const carnetBrutto = hours * STAWKA_CARNET_BRUTTO;
     if (isStudent){
       total = carnetBrutto + premia;
       szczegoly = `Wypłata carnetowa: ${carnetBrutto.toFixed(2)} zł<br>Premia: ${premia} zł`;
     } else {
       total = grossToNet(carnetBrutto) + grossToNet(premia);
-      szczegoly = `Wypłata carnetowa netto: ${grossToNet(carnetBrutto)} zł<br>Premia netto: ${grossToNet(premia)} zł`;
+      szczegoly = `Wypłata carnetowa netto (~82%): ${grossToNet(carnetBrutto).toFixed(2)} zł<br>Premia netto (~82%): ${grossToNet(premia).toFixed(2)} zł`;
     }
   } else {
     if (isStudent){
       total = STAWKA_UCZEN_BRUTTO * hours;
-      szczegoly = `Minimalna stawka ucznia: ${STAWKA_UCZEN_BRUTTO.toFixed(2)} zł/h`;
+      szczegoly = `Rozliczenie stawką minimalną ucznia: ${STAWKA_UCZEN_BRUTTO.toFixed(2)} zł/h`;
     } else {
       total = STAWKA_MIN_NETTO * hours;
-      szczegoly = `Minimalna stawka bez statusu: ${STAWKA_MIN_NETTO.toFixed(2)} zł/h`;
+      szczegoly = `Rozliczenie stawką minimalną netto: ${STAWKA_MIN_NETTO.toFixed(2)} zł/h`;
     }
   }
 
   resultSummary.style.display = "block";
   resultDetails.style.display = "block";
   resultSummary.innerHTML = `Wypłata końcowa: <strong>${total.toFixed(2)} zł</strong>`;
-  resultDetails.innerHTML = szczegoly + `<br><strong>Wskaźnik:</strong> ${wsk.toFixed(2)}<br><br><em>Uwaga: do uzyskania premii wymagane jest przepracowanie min. 100h i wskaźnik >=160. Przy braku spełnienia warunków kalkulowana jest płaca minimalna.</em>`;
+  resultDetails.innerHTML = szczegoly + `<br><strong>Wskaźnik:</strong> ${wsk.toFixed(2)}<br><br><small>Wymagane do premii: min. 100h i wskaźnik >=160.</small>`;
 }
 
 function resetForm(){
@@ -343,8 +376,6 @@ function resetForm(){
   studentCheckbox.checked = false;
   resultSummary.style.display = "none";
   resultDetails.style.display = "none";
-  resultSummary.innerHTML = "";
-  resultDetails.innerHTML = "";
 }
 
 calcBtn.addEventListener("click", calculate);
